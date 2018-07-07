@@ -1,0 +1,40 @@
+IC卡数据格式：
+
+0 IC卡编号     userNo
+1 用户ID       userId
+2 用户姓名     realName
+3 医院ID       orgId
+4 医院名称     orgName
+5 科室ID       departmentId
+6 科室名称     departmentName
+7 用户类型     userType
+
+
+二维码数据格式：
+
+0 医院名称     orgName
+1 收集人员ID   createBy
+2 收集人员姓名 createName
+3 科室名称     departmentName
+4 科室人员ID   departmentUserId
+5 科室人员姓名 departmentUserName
+6 医废类型     wasteTypeDictId
+7 医废重量     weight
+8 收集时间     createTime
+9 医废编号     guid
+
+医废桶二维码：
+
+0 医院ID       orgId
+1 医院名称     orgName
+2 医废桶类型   garbageBinTypeId
+3 医废桶编号   guid
+
+垃圾桶编号：
+医院编号(3位) + YYMMDD + HHMMSSFFF + 0
+
+流水号：
+医院编号(3位) + 科室编号(3位) + YYMMDD + HHMMSS + 医废类型id
+
+收集人员：123456789_2_张三_001_第一人民医院_011_后勤_2
+科室人员：123456780_3_李四_001_第一人民医院_001_门诊_1

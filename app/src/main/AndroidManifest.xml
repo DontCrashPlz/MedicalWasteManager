@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hnsi.zheng.medicalwastemanager">
+
+    <!-- NFC -->
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- 管理蓝牙设备的权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!-- 在sd卡中创建与删除文件权限 -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+
+    <!-- 向SD卡写入数据权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/launch_logo"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".apps.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".collect.CollectNfcReadActivity"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".collect.CollectInfoActivity"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".collect.PrintQRCodeActivity">
+        </activity>
+
+        <activity android:name=".collect.NfcTestActivity"
+            android:launchMode="singleTop">
+        </activity>
+        <activity android:name=".collect.NfcTestActivity2"
+            android:launchMode="singleTop">
+        </activity>
+        <activity android:name=".collect.NfcTestActivity3"
+            android:launchMode="singleTop">
+        </activity>
+        <activity android:name=".collect.NfcTestActivity4"
+            android:launchMode="singleTop">
+        </activity>
+        <activity android:name=".collect.NfcTestActivity5"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".input.InputNfcReadActivity"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".input.InputMainActivity">
+        </activity>
+
+        <activity android:name=".buckets.BucketNfcReadActivity"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".buckets.PrintBucketQRCodeActivity">
+        </activity>
+
+        <activity android:name=".output.OutputNfcReadActivity"
+            android:launchMode="singleTop">
+        </activity>
+
+        <activity android:name=".output.OutputMainActivity">
+        </activity>
+
+    </application>
+
+</manifest>

@@ -1,0 +1,292 @@
+20180628 
+ 1 系统管理模块
+    	 医院管理
+     	 科室管理
+     	 卡片管理
+     	 用户管理
+     	 角色管理-授权
+     	 路径管理
+     	 预警管理
+     	 垃圾桶管理
+     	 
+ 2运营管理
+ 		医疗废品收集
+ 		医疗废品入库
+		医疗废品出库   	 
+3 统计分析
+
+###################################################################################
+手机端接口
+1、返回单个实体
+	{
+	"msg": "",
+	"obj": {
+	   $key1:value,
+	   $key2:value
+	},
+	"status": "200",
+	"success": true
+}
+2、返回多个实体 不涉及分页
+	{
+	"msg": "",
+	"obj": [{
+	   $key1:value,
+	   $key2:value
+	},{
+	   $key1:value,
+	   $key2:value
+	}],
+	"status": "200",
+	"success": true
+}
+3、返回多个实体 涉及分页
+	{
+	"msg": "",
+	"obj": {
+	   "asc": true,
+		"condition": {},
+		"current": 1,
+		"limit": 2147483647,
+		"offset": 0,
+		"offsetCurrent": 0,
+		"optimizeCount": false,
+		"orderByField": "",
+		"pages": 1,
+		"records": [{
+				 $key1:value,
+	   			 $key2:value
+			}, {
+				 $key1:value,
+	             $key2:value
+			}
+		],
+		"searchCount": true,
+		"size": 10,
+		"total": 4
+	},
+	"status": "200",
+	"success": true
+}
+其他说明: 根据success 来判断是否成功，返回失败获取msg提示信息即可
+
+
+扫码读取工卡登陆 +用户名和密码 
+1 根据卡号获取人员信息（人员姓名、ID、所在科室、所在医院）
+hospital/mobile/system/systemUser/getUser.do?cardNo=卡号
+	{
+	"msg": "",
+	"obj": {
+	   id:用户id,  
+	   loginName:登录名,
+	   realName:姓名,
+	   orgId:医院id,
+	   departmentId:部门id,
+	   orgName:医院名称,
+	   departmentName:部门名称,
+	   userType:用户类型(0 超级管理员 1 科室人员 2收集人 3入库人 4出库人)
+	},
+	"status": "200",
+	"success": true
+}
+2 获取数据字典（例如医废类型）
+	hospital/mobile/system/systemDict/list.do?typeCode=类型编码&orgId=医院ID
+	{
+	"msg": "",
+	"obj": [{
+	   dictId:1,
+	   dictName:感染性废品,
+	   dictCode:扩展信息
+	},{
+	    dictId:2,
+	   dictName:感染性废品,
+	   dictCode:扩展信息
+	}],
+	"status": "200",
+	"success": true
+}
+   
+3、收集医废打印标签（生成标签号）
+hospital/mobile/ylfpgl/medicalWaste/collect/add.do?
+{departmentUserId:科室人员
+ weight:重量
+ wasteTypeDictId:医废类型id
+ userId:入库人id
+ orgId:医院Id
+ guid:标签号
+}  成功后msg存放标签号
+ 
+ 4、删除收集的医废
+hospital/mobile/ylfpgl/medicalWaste/collect/del.do?orgId=医院id&guid=标签号
+  
+ 5、查询收集的医废(不分页)
+hospital/mobile/ylfpgl/medicalWaste/collect/query.do?orgId=医院id&userId=收集人&key=关键字 
+查询已收集的医疗废品
+   返回实体参数说明 
+     guid;
+    /** 科室 */
+   departmentId;
+    
+    /** 科室人员 */
+    departmentUserId;
+     /** 科室人员 */
+     departmentUserName;
+    
+    /** 录入方式 (0扫码枪 1人工) */
+    inputDataType;
+    
+    /** 重量 */
+    weight;
+    
+    /** 医疗废品类型（数据字典） */
+  wasteTypeDictId;
+     /** 医疗废品类型名称） */
+    wasteTypeDictName;
+    
+
+    
+    /** 业务状态（收集 入库 出库） */
+    businessStatus;
+    
+    /** 垃圾箱guid */
+    garbageGuid;
+    
+    /**  */
+    orgId;
+    
+    /** 期限入库时间 */
+   requireInputTime;
+    
+    /** 入库是否逾期 0未逾期 1 逾期 */
+     inputOverdueStatus;
+    
+    /** 提醒状态 0 未提醒 1 已提醒 */
+    remindStatus;
+入库接口 
+hospital/mobile/ylfpgl/medicalWaste/input/add.do?
+ 入参{
+  guid:桶编码
+  orgId:医院id
+  creatBy:入库人id
+  wasteList:[
+    {guid:医废编码}，
+    {guid:医废编码}
+    ]
+ }
+
+入库 删除医废桶
+hospital/mobile/ylfpgl/medicalWaste/input/del.do?orgId=医院id&userId=收集人&guid=桶编码
+
+入库查询列表 不分页
+hospital/mobile/ylfpgl/medicalWaste/input/query.do?orgId=医院id&userId=收集人&key=关键字 
+ 返回实体
+   guid:桶编码
+   wasteAmount:医废数量
+   wasteWeight:医废总重
+   createTime:入库时间
+ 
+入库查询详情
+hospital/mobile/ylfpgl/medicalWaste/input/get.do?orgId=医院id&userId=收集人&guid=桶编码
+ 返回实体
+   guid:桶编码
+   wasteAmount:医废数量
+   wasteWeight:医废总重
+   createTime:入库时间
+   wasteList:[
+   {
+   	  guid;
+    /** 科室 */
+   departmentId;
+    
+    /** 科室人员 */
+    departmentUserId;
+     /** 科室人员 */
+     departmentUserName;
+    
+    /** 录入方式 (0扫码枪 1人工) */
+    inputDataType;
+    
+    /** 重量 */
+    weight;
+    
+    /** 医疗废品类型（数据字典） */
+  wasteTypeDictId;
+     /** 医疗废品类型名称） */
+    wasteTypeDictName;
+    /** 业务状态（收集 入库 出库） */
+    businessStatus;
+   }
+   ]
+ 
+
+出库接口
+hospital/mobile/ylfpgl/medicalWaste/output/edit.do?orgId=医院id&userId=出库人&fileIds=附件id&outputTotalWeight=?
+出库查询列表不分页
+hospital/mobile/ylfpgl/medicalWaste/output/query.do?orgId=医院id&userId=收集人&key=关键字 
+出库详情
+hospital/mobile/ylfpgl/medicalWaste/output/get.do?orgId=医院id&userId=收集人&guid=桶编码
+上传文档接口
+hospital/mobile/system/upload.do?file=?&userId=?
+{
+	 id;
+	createBy;
+	createTime;
+	 fileName;
+	 fileUrl;
+	fileNewName;
+	fileExt;
+	fileSize;
+}
+
+
+
+
+
+
+
+
+
+IC卡数据格式：
+
+IC卡编号 userNo
+用户ID  userId
+登陆账号  loginName
+用户姓名   realName
+医院ID   orgId
+医院名称     orgName
+科室ID   departmentId
+科室名称     departmentName
+用户类型     userType
+
+
+二维码数据格式：
+
+
+医院名称            orgName
+收集人员ID   createBy
+收集人员姓名      createName
+科室名称               departmentName
+科室人员ID     departmentUserId
+科室人员姓名           departmentUserName
+医废类型              wasteTypeDictId
+医废重量              weight
+收集时间            createTime
+医废编号           guid
+
+
+医废桶二维码：
+
+医院ID      orgId
+医院名称              orgName
+医废桶类型     garbageBinTypeId
+医废桶编号         guid
+
+
+阿里云搞了个免费试用的ECS，医废部署在上边演示用
+
+程鑫 2018/7/5 星期四 下午 3:25:42
+ID: wangzhizhen2018  密码：mist445566
+
+程鑫 2018/7/5 星期四 下午 3:26:10
+远程连接密码：124545    系统登录密码：Yf445566
+47.96.81.0
