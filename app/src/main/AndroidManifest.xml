@@ -50,6 +50,9 @@
             android:launchMode="singleTop">
         </activity>
 
+        <activity android:name=".collect.CollectedListActivity">
+        </activity>
+
         <activity android:name=".collect.PrintQRCodeActivity">
         </activity>
 
@@ -74,6 +77,12 @@
         </activity>
 
         <activity android:name=".input.InputMainActivity">
+        </activity>
+
+        <activity android:name=".input.InputedListActivity">
+        </activity>
+
+        <activity android:name=".input.InputedBucketDetailActivity">
         </activity>
 
         <activity android:name=".buckets.BucketNfcReadActivity"

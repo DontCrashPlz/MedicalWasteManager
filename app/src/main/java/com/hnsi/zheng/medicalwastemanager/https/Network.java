@@ -1,8 +1,23 @@
 package com.hnsi.zheng.medicalwastemanager.https;
 
+import android.support.annotation.Nullable;
+
+import com.hnsi.zheng.medicalwastemanager.beans.CollectedWasteEntity;
+import com.hnsi.zheng.medicalwastemanager.beans.InputedBucketEntity;
+import com.hnsi.zheng.medicalwastemanager.beans.WasteUploadEntity;
+import com.hnsi.zheng.medicalwastemanager.beans.HttpResult;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -54,10 +69,134 @@ public class Network {
     private static ApiService apiService;
     private static OkHttpClient mOkHttpClient;
     private static Retrofit mRetrofit;
-    private static final String BASEURL= "http://47.96.81.0/hospital/";
+    private static final String BASEURL= "http://47.96.81.0/";
 
-    public static ApiService getApiService(){
-        return apiService;
+    /**
+     * 收集医废打印标签后调用次接口
+     * @param departmentUserId
+     * @param weight
+     * @param wasteTypeDictId
+     * @param userId
+     * @param orgId
+     * @param guid
+     * @return
+     */
+    public Observable<HttpResult<WasteUploadEntity>> collectMedicalWaste(String departmentUserId,//科室人员
+                                                                         String weight,//重量
+                                                                         String wasteTypeDictId,//医废类型id
+                                                                         String userId,//入库人id
+                                                                         String orgId,//医院id
+                                                                         String guid){//医废编号
+        return apiService.collectMedicalWaste(departmentUserId, weight, wasteTypeDictId, userId, orgId, guid);
+    }
+
+    /**
+     * 获取已收集的医废列表
+     * @param orgId
+     * @param userId
+     * @param key
+     * @return
+     */
+    public Observable<HttpResult<ArrayList<CollectedWasteEntity>>> getCollectedList(String orgId,//医院id
+                                                                                    String userId,//收集人id
+                                                                                    @Nullable String key){//关键字
+        Map<String, String> paramsMap= new HashMap<>();
+        paramsMap.put("orgId", orgId);
+        paramsMap.put("userId", userId);
+        if (key!= null && key.trim().length()> 0){
+            paramsMap.put("key", key);
+        }
+        return apiService.getcollectedList(paramsMap);
+    }
+
+    /**
+     * 删除已收集的医废列表
+     * @param orgId
+     * @param guid
+     * @return
+     */
+    public Observable<HttpResult<String>> deleteCollectedWaste(String orgId, String guid){
+        return apiService.deleteCollectedWaste(orgId, guid);
+    }
+
+    /**
+     * 上传入库信息
+     * @param jsonObject
+     * @return
+     */
+    public Observable<HttpResult<String>> inputMedicalWaste(JSONObject jsonObject){
+        RequestBody body= RequestBody.create(MediaType.parse("application/json"),jsonObject.toString());
+        return apiService.inputWastes(body);
+    }
+
+    /**
+     * 删除已入库的医废桶
+     * @param orgId
+     * @param userId
+     * @param guid
+     * @return
+     */
+    public Observable<HttpResult<String>> deleteInputedBucket(String orgId, String userId, String guid){
+        return apiService.deleteInputedBucket(orgId, userId, guid);
+    }
+
+    /**
+     * 获取已入库的医废桶列表
+     * @param orgId
+     * @param userId
+     * @param key
+     * @return
+     */
+    public Observable<HttpResult<ArrayList<InputedBucketEntity>>> getInputedList(String orgId,//医院id
+                                                                                 String userId,//收集人id
+                                                                                 @Nullable String key){//关键字
+        Map<String, String> paramsMap= new HashMap<>();
+        paramsMap.put("orgId", orgId);
+        paramsMap.put("userId", userId);
+        if (key!= null && key.trim().length()> 0){
+            paramsMap.put("key", key);
+        }
+        return apiService.getInputedList(paramsMap);
+    }
+
+    /**
+     * 获取已入库的医废桶详情
+     * @param orgId
+     * @param userId
+     * @param guid
+     * @return
+     */
+    public Observable<HttpResult<InputedBucketEntity>> getInputedBucketInfo(String orgId, String userId, String guid, @Nullable String key){
+        Map<String, String> paramsMap= new HashMap<>();
+        paramsMap.put("orgId", orgId);
+        paramsMap.put("userId", userId);
+        paramsMap.put("guid", guid);
+        if (key!= null && key.trim().length()> 0){
+            paramsMap.put("key", key);
+        }
+        return apiService.getInputedBucketInfo(paramsMap);
+    }
+
+    /**
+     * 删除已入库的医废袋
+     * @param orgId
+     * @param guid
+     * @param wasteGuid
+     * @return
+     */
+    public Observable<HttpResult<String>> deleteInputedWaste(String orgId, String guid, String wasteGuid){
+        return apiService.deleteInputedWaste(orgId, guid, wasteGuid);
+    }
+
+    /**
+     * 获取要出库的医废桶的信息
+     * @param orgId
+     * @param userId
+     * @param guid
+     * @return
+     */
+    public Observable<HttpResult<String>> getOutputDetail(String orgId, String userId, String guid){
+        return apiService.getOutputDetail(orgId, userId, guid);
     }
 
 }

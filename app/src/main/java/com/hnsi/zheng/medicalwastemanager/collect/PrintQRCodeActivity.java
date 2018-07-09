@@ -1,7 +1,6 @@
 package com.hnsi.zheng.medicalwastemanager.collect;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,20 +26,27 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.hnsi.zheng.medicalwastemanager.R;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseActivity;
+import com.hnsi.zheng.medicalwastemanager.beans.WasteUploadEntity;
+import com.hnsi.zheng.medicalwastemanager.https.Network;
+import com.hnsi.zheng.medicalwastemanager.https.ResponseTransformer;
+import com.hnsi.zheng.medicalwastemanager.utils.LogUtil;
 import com.hnsi.zheng.medicalwastemanager.utils.Tools;
 import com.hnsi.zheng.medicalwastemanager.widgets.progressDialog.ProgressDialog;
-import com.qs.helper.printer.Device;
 import com.qs.helper.printer.PrintService;
 import com.qs.helper.printer.PrinterClass;
 import com.qs.helper.printer.bt.BtService;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Zheng on 2018/7/3.
@@ -152,10 +158,38 @@ public class PrintQRCodeActivity extends BaseActivity {
                         + "_" + weight
                         + "_" + createTime
                         + "_" + guid;
+                LogUtil.d("医废袋二维码信息：", str);
 
                 PrintService.pl.printImage(createQRImage(str,300,300));
                 PrintService.pl.write(new byte[] { 0x1d, 0x0c });
-                showPrintCompleteDialog();
+
+                addNetWork(Network.getInstance().collectMedicalWaste(departmentUserId, weight, wasteTypeDictId, createBy, collectInfos[3], guid)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .compose(ResponseTransformer.<WasteUploadEntity>handleResult())
+                        .subscribe(new Consumer<WasteUploadEntity>() {
+                            @Override
+                            public void accept(WasteUploadEntity s) throws Exception {
+                                dismissDialog();
+                                showPrintCompleteDialog();
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                dismissDialog();
+                                showLongToast("上传失败：" +  throwable.toString());
+                            }
+                        }, new Action() {
+                            @Override
+                            public void run() throws Exception {
+
+                            }
+                        }, new Consumer<Disposable>() {
+                            @Override
+                            public void accept(Disposable disposable) throws Exception {
+                                showDialog();
+                            }
+                        }));
             }
         });
 

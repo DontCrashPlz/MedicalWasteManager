@@ -58,10 +58,10 @@ public class ResponseTransformer {
         public ObservableSource<T> apply(HttpResult<T> tHttpResult) throws Exception {
             boolean success= tHttpResult.isSuccess();//success=true 表示请求网络成功
             String status= tHttpResult.getStatus();//status="200" 表示接口返回数据正常
-            if ("200".equals(status)){
+            if (success && "200".equals(status)){
                 if (tHttpResult.getObj()== null){
                     //return Observable.error(new ApiException(200, description));
-                    return (ObservableSource<T>) Observable.just("null");
+                    return (ObservableSource<T>) Observable.just("");
                 }
                 return Observable.just(tHttpResult.getObj());
             }

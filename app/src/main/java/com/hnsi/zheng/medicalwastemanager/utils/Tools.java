@@ -37,7 +37,7 @@ public class Tools {
             case "感染性医废":
                 wasteTypeId= 1;
                 break;
-            case "损伤性性医废":
+            case "损伤性医废":
                 wasteTypeId= 2;
                 break;
             case "药物性医废":
@@ -59,7 +59,7 @@ public class Tools {
     public static float formatWasteWeigh(String weighStr){
         int strSize= weighStr.length();
         LogUtil.d("当前重量截取前：", weighStr);
-        String floatStr= weighStr.substring(0, strSize - 4);
+        String floatStr= weighStr.substring(0, strSize - 3);
         LogUtil.d("当前重量截取后：", floatStr);
         return Float.parseFloat(floatStr);
     }

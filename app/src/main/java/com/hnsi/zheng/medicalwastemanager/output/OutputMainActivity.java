@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,7 +17,9 @@ import android.widget.TextView;
 import com.hnsi.zheng.medicalwastemanager.R;
 import com.hnsi.zheng.medicalwastemanager.adapters.InputWasteRecyclerAdapter;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseActivity;
+import com.hnsi.zheng.medicalwastemanager.input.InputedListActivity;
 import com.hnsi.zheng.medicalwastemanager.utils.LogUtil;
+import com.hnsi.zheng.medicalwastemanager.widgets.progressDialog.ProgressDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -94,12 +97,22 @@ public class OutputMainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId()== android.R.id.home)
             finish();
+        if (item.getItemId()== R.id.edit){
+            showShortToast("已出库医废桶列表");
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit, menu);
         return true;
     }
 
     @Override
     public void initProgressDialog() {
-
+        dialog= new ProgressDialog(getRealContext());
+        dialog.setLabel("请稍等..");
     }
 
     class OutputReceiver extends BroadcastReceiver{

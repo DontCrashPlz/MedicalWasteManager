@@ -15,6 +15,7 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -238,7 +239,7 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
                 case MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     String ss = new String(readBuf, 0,msg.arg1);
-                    LogUtil.d("message_read", ss);
+                    //LogUtil.d("message_read", ss);
 
                     currentWeigh += ss;
                     int m= currentWeigh.indexOf("+");
@@ -273,6 +274,17 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId()== android.R.id.home)
             finish();
+        if (item.getItemId()== R.id.edit){
+            Intent intent= new Intent(getRealContext(), CollectedListActivity.class);
+            intent.putExtra("collect_person_info", collectPersonInfo);
+            startActivity(intent);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit, menu);
         return true;
     }
 

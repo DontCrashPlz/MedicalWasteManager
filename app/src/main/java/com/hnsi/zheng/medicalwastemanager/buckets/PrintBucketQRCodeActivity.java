@@ -27,6 +27,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.hnsi.zheng.medicalwastemanager.R;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseActivity;
 import com.hnsi.zheng.medicalwastemanager.collect.CollectInfoActivity;
+import com.hnsi.zheng.medicalwastemanager.utils.LogUtil;
 import com.hnsi.zheng.medicalwastemanager.widgets.progressDialog.ProgressDialog;
 import com.qs.helper.printer.PrintService;
 import com.qs.helper.printer.PrinterClass;
@@ -99,6 +100,7 @@ public class PrintBucketQRCodeActivity extends BaseActivity {
                 currentTime4Num= new SimpleDateFormat("yyMMddHHmmssFFF").format(new Date());
                 String bucketNum= operateInfos[3] + currentTime4Num + 0;
                 String str= operateInfos[3] + "_" + operateInfos[4] + "_" + 1 + "_" + bucketNum;
+                LogUtil.d("医废桶二维码信息：" , str);
                 PrintService.pl.printImage(createQRImage(str,300,300));
                 PrintService.pl.write(new byte[] { 0x1d, 0x0c });
                 showPrintCompleteDialog();
