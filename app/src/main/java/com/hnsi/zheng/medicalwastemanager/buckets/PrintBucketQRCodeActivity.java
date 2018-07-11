@@ -98,6 +98,12 @@ public class PrintBucketQRCodeActivity extends BaseActivity {
                     return;
                 }
                 currentTime4Num= new SimpleDateFormat("yyMMddHHmmssFFF").format(new Date());
+//                String orgId= operateInfos[3];
+//                if (orgId.length()== 1){
+//                    orgId= "00" + orgId;
+//                }else if (orgId.length()== 2){
+//                    orgId= "0" + orgId;
+//                }
                 String bucketNum= operateInfos[3] + currentTime4Num + 0;
                 String str= operateInfos[3] + "_" + operateInfos[4] + "_" + 1 + "_" + bucketNum;
                 LogUtil.d("医废桶二维码信息：" , str);

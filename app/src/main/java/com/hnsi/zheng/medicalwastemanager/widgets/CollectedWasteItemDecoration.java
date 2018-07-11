@@ -37,11 +37,12 @@ public class CollectedWasteItemDecoration extends RecyclerView.ItemDecoration {
             int position= parent.getChildAdapterPosition(view);
             if (position== 0) continue;
             c.drawLine(
-                    parent.getPaddingLeft() + 4,
+                    parent.getPaddingLeft() + 8,
                     view.getTop() - 1,
-                    parent.getWidth() - parent.getPaddingRight() - 4,
+                    parent.getWidth() - parent.getPaddingRight() - 8,
                     view.getTop() - 1,
                     mPaint);
         }
     }
+
 }

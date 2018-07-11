@@ -219,6 +219,8 @@ public class InputMainActivity extends BaseActivity {
         dialog.setLabel("请稍候..");
     }
 
+
+    private String mUncompletedQrInfoStr;
     class InputReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -230,7 +232,9 @@ public class InputMainActivity extends BaseActivity {
                 if (qrInfoSize== 4){//这是医废桶二维码
                     LogUtil.d("红光扫码医废桶编号：" , qrInfos[3] + "---" + qrInfos[3].length());
                     if (qrInfos[3].length()!= 19 ){
-                        showShortToast("无效的二维码");
+                        //showShortToast("无效的二维码");
+                        mUncompletedQrInfoStr= qrInfoStr.replace("\n" , "");
+                        LogUtil.d("不完整的医废桶信息：", mUncompletedQrInfoStr);
                         return;
                     }
                     wasteBucketInfo= qrInfoStr;
@@ -254,7 +258,18 @@ public class InputMainActivity extends BaseActivity {
                         mAdapter.addData(qrInfos);
                     }
                 }else {
-                    showShortToast("无效二维码");
+                    if (mUncompletedQrInfoStr!= null && mUncompletedQrInfoStr.length()> 0){
+                        mUncompletedQrInfoStr= mUncompletedQrInfoStr + qrInfoStr.replace("\n" , "");
+                        LogUtil.d("拼接之后的医废桶信息：", mUncompletedQrInfoStr);
+                        String[] strs= mUncompletedQrInfoStr.replace("\n" , "").split("_");
+                        if (strs.length== 4 && strs[3].length()== 19){//这是医废桶二维码
+                            wasteBucketInfo= mUncompletedQrInfoStr;
+                            wasteBucketInfos= strs;
+                            mBucketNumTv.setText(strs[3]);
+                        }
+                        mUncompletedQrInfoStr= "";
+                    }
+                    //showShortToast("无效二维码");
                 }
             }else {
                 showShortToast("无效数据");

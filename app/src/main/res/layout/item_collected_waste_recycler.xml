@@ -49,25 +49,25 @@
             android:layout_height="wrap_content"
             android:text="编号："
             android:textColor="#797979"
-            android:textSize="10sp"/>
+            android:textSize="9sp"/>
         <TextView
             android:id="@+id/tv_wastenum"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:textColor="#797979"
-            android:textSize="10sp"/>
+            android:textSize="9sp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="时间："
             android:textColor="#797979"
-            android:textSize="10sp"/>
+            android:textSize="9sp"/>
         <TextView
             android:id="@+id/tv_collecttime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#797979"
-            android:textSize="10sp"/>
+            android:textSize="9sp"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,24 +78,24 @@
             android:layout_height="wrap_content"
             android:text="科室："
             android:textColor="#797979"
-            android:textSize="10sp"/>
+            android:textSize="9sp"/>
         <TextView
             android:id="@+id/tv_department"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:textColor="#797979"
-            android:textSize="10sp"/>
+            android:textSize="9sp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="操作："
             android:textColor="#797979"
-            android:textSize="10sp"/>
+            android:textSize="9sp"/>
         <TextView
             android:id="@+id/tv_operate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#797979"
-            android:textSize="10sp"/>
+            android:textSize="9sp"/>
     </LinearLayout>
 </LinearLayout>

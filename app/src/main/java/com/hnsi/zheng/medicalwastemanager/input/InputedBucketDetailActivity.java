@@ -129,7 +129,7 @@ public class InputedBucketDetailActivity extends BaseActivity {
     }
 
     private void requestBucketDetail(@Nullable String key){
-        addNetWork(Network.getInstance().getInputedBucketInfo("" + bucketEntity.getOrgId(), "" + bucketEntity.getCreateBy(), bucketEntity.getGuid(), key)
+        addNetWork(Network.getInstance().getInputedBucketInfo("" + bucketEntity.getOrgId(), "" + bucketEntity.getCreateBy(), bucketEntity.getGuid(), key, "" + bucketEntity.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(ResponseTransformer.<InputedBucketEntity>handleResult())

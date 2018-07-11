@@ -136,8 +136,8 @@ public class Network {
      * @param guid
      * @return
      */
-    public Observable<HttpResult<String>> deleteInputedBucket(String orgId, String userId, String guid){
-        return apiService.deleteInputedBucket(orgId, userId, guid);
+    public Observable<HttpResult<String>> deleteInputedBucket(String orgId, String userId, String guid, String id){
+        return apiService.deleteInputedBucket(orgId, userId, guid, id);
     }
 
     /**
@@ -166,7 +166,7 @@ public class Network {
      * @param guid
      * @return
      */
-    public Observable<HttpResult<InputedBucketEntity>> getInputedBucketInfo(String orgId, String userId, String guid, @Nullable String key){
+    public Observable<HttpResult<InputedBucketEntity>> getInputedBucketInfo(String orgId, String userId, String guid, @Nullable String key, String id){
         Map<String, String> paramsMap= new HashMap<>();
         paramsMap.put("orgId", orgId);
         paramsMap.put("userId", userId);
@@ -174,6 +174,7 @@ public class Network {
         if (key!= null && key.trim().length()> 0){
             paramsMap.put("key", key);
         }
+        paramsMap.put("id", id);
         return apiService.getInputedBucketInfo(paramsMap);
     }
 

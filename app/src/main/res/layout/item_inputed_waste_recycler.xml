@@ -32,7 +32,7 @@
             android:textSize="10sp"/>
         <TextView
             android:id="@+id/tv_wastenum"
-            android:layout_width="100dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:textColor="#797979"
             android:textSize="10sp"/>
@@ -61,7 +61,7 @@
             android:textSize="10sp"/>
         <TextView
             android:id="@+id/tv_weigh"
-            android:layout_width="100dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:textColor="#797979"
             android:textSize="10sp"/>

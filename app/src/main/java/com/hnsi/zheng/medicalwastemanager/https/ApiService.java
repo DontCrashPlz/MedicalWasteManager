@@ -48,7 +48,7 @@ public interface ApiService {
     Observable<HttpResult<String>> inputWastes(@Body RequestBody requestBody);
 
     @GET("/hospital/mobile/ylfpgl/medicalWaste/input/del.do")
-    Observable<HttpResult<String>> deleteInputedBucket(@Query("orgId") String orgId, @Query("userId") String userId, @Query("guid") String guid);
+    Observable<HttpResult<String>> deleteInputedBucket(@Query("orgId") String orgId, @Query("userId") String userId, @Query("guid") String guid, @Query("id") String id);
 
     @GET("/hospital/mobile/ylfpgl/medicalWaste/input/query.do")
     Observable<HttpResult<ArrayList<InputedBucketEntity>>> getInputedList(@QueryMap Map<String, String> queryMap);

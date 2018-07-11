@@ -20,6 +20,7 @@ public class InputedBucketEntity implements Serializable {
      * fileId :
      * garbageBinTypeId : 0
      * guid : 0011807081927210020
+     * id:1,
      * inputDataType : 0
      * orgId : 1
      * orgName : 第一人民医院
@@ -48,6 +49,7 @@ public class InputedBucketEntity implements Serializable {
     private String fileId;
     private int garbageBinTypeId;
     private String guid;
+    private int id;
     private int inputDataType;
     private int orgId;
     private String orgName;
@@ -65,6 +67,14 @@ public class InputedBucketEntity implements Serializable {
     private int wasteAmount;
     private ArrayList<CollectedWasteEntity> wasteList;
     private float wasteWeight;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public ArrayList<CollectedWasteEntity> getWasteList() {
         return wasteList;
@@ -286,6 +296,7 @@ public class InputedBucketEntity implements Serializable {
                 ", fileId='" + fileId + '\'' +
                 ", garbageBinTypeId=" + garbageBinTypeId +
                 ", guid='" + guid + '\'' +
+                ", id=" + id +
                 ", inputDataType=" + inputDataType +
                 ", orgId=" + orgId +
                 ", orgName='" + orgName + '\'' +

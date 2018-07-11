@@ -165,7 +165,8 @@ public class InputedListActivity extends BaseActivity {
         String orgId= "" + entity.getOrgId();
         String userId= "" + entity.getCreateBy();
         String guid= entity.getGuid();
-        addNetWork(Network.getInstance().deleteInputedBucket(orgId, userId, guid)
+        String id= "" + entity.getId();
+        addNetWork(Network.getInstance().deleteInputedBucket(orgId, userId, guid, id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(ResponseTransformer.<String>handleResult())

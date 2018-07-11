@@ -72,6 +72,7 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
     private BluetoothAdapter mBluetoothAdapter = null;
     // Member object for the chat services
     private BluetoothSerialService mChatService = null;
+    private BluetoothDevice device = null;
 
 
     //二维码打印页面的请求码和返回码
@@ -143,6 +144,15 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
         checkBox4.setOnCheckedChangeListener(this);
         checkBox5.setOnCheckedChangeListener(this);
 
+        mWasteWeighTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ("点击此处重连蓝牙秤".equals(mWasteWeighTv.getText().toString().trim())){
+                    mChatService.connect(device);
+                }
+            }
+        });
+
         mCreateTagBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -180,7 +190,7 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // Get the BLuetoothDevice object
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(BT04_A);
+        device = mBluetoothAdapter.getRemoteDevice(BT04_A);
         // Initialize the BluetoothChatService to perform bluetooth connections
         mChatService = new BluetoothSerialService(this, mHandler);
         // Attempt to connect to the device
@@ -191,7 +201,7 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
     @Override
     public synchronized void onResume() {
         super.onResume();
-        if(D) Log.e(TAG, "+ ON RESUME +");
+        LogUtil.d(TAG, "+ ON RESUME +");
 
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
@@ -226,11 +236,13 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
                             mWasteWeighTv.append(mConnectedDeviceName);
                             break;
                         case BluetoothSerialService.STATE_CONNECTING:
-                            mWasteWeighTv.setText(R.string.title_connecting);
+                            //mWasteWeighTv.setText(R.string.title_connecting);
+                            mWasteWeighTv.setText("正在连接蓝牙秤..");
                             break;
                         case BluetoothSerialService.STATE_LISTEN:
                         case BluetoothSerialService.STATE_NONE:
-                            mWasteWeighTv.setText(R.string.title_not_connected);
+                            //mWasteWeighTv.setText(R.string.title_not_connected);
+                            mWasteWeighTv.setText("点击此处重连蓝牙秤");
                             break;
                     }
                     break;
@@ -252,7 +264,7 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
                     }
                     int j= currentWeigh.indexOf("+", m + 1);
                     String value= currentWeigh.substring(m + 1, j).trim();
-                    LogUtil.d("value", value);
+                    //LogUtil.d("value", value);
                     mWasteWeighTv.setText(value);
                     currentWeigh= "";
                     break;
@@ -303,6 +315,12 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
                 checkBox3.setChecked(false);
                 checkBox4.setChecked(false);
                 checkBox5.setChecked(false);
+
+//                if (mBluetoothAdapter== null) mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//                if (device== null) device = mBluetoothAdapter.getRemoteDevice(BT04_A);
+//                if (mChatService== null) mChatService = new BluetoothSerialService(this, mHandler);
+//                mChatService.connect(device);
+
             }
         }
     }

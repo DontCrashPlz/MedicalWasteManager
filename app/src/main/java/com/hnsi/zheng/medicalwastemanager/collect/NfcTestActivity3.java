@@ -22,7 +22,11 @@ import java.util.Locale;
 @Deprecated
 public class NfcTestActivity3 extends BaseNfcActivity {
     //private String mText = "123456789_2_张三_001_第一人民医院_011_后勤_2";//收集
-    private String mText = "123456780_3_李四_001_第一人民医院_001_门诊_1";//科室
+    //private String mText = "123456780_3_李四_001_第一人民医院_001_门诊_1";//科室
+
+    private String mText = "123456781_5_王海_001_第一人民医院_003_口腔科_1";
+    //private String mText = "123456782_6_李玉轩_001_第一人民医院_008_儿科_1";
+    //private String mText = "123456783_7_孙利平_001_第一人民医院_011_后勤科_2";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -12,7 +12,6 @@ import com.hnsi.zheng.medicalwastemanager.R;
 import com.hnsi.zheng.medicalwastemanager.buckets.BucketNfcReadActivity;
 import com.hnsi.zheng.medicalwastemanager.collect.CollectNfcReadActivity;
 import com.hnsi.zheng.medicalwastemanager.collect.NfcTestActivity;
-import com.hnsi.zheng.medicalwastemanager.collect.NfcTestActivity2;
 import com.hnsi.zheng.medicalwastemanager.collect.NfcTestActivity3;
 import com.hnsi.zheng.medicalwastemanager.input.InputNfcReadActivity;
 import com.hnsi.zheng.medicalwastemanager.output.OutputNfcReadActivity;
