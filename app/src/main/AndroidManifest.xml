@@ -99,6 +99,9 @@
         <activity android:name=".output.OutputMainActivity">
         </activity>
 
+        <activity android:name=".output.OutputedListActivity">
+        </activity>
+
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ package com.hnsi.zheng.medicalwastemanager.https;
 
 import com.hnsi.zheng.medicalwastemanager.beans.CollectedWasteEntity;
 import com.hnsi.zheng.medicalwastemanager.beans.InputedBucketEntity;
+import com.hnsi.zheng.medicalwastemanager.beans.UploadPhotoEntity;
 import com.hnsi.zheng.medicalwastemanager.beans.WasteUploadEntity;
 import com.hnsi.zheng.medicalwastemanager.beans.HttpResult;
 
@@ -9,11 +10,14 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
@@ -63,13 +67,21 @@ public interface ApiService {
 
     /***************************出库***************************/
 
-    @GET("/hospital/mobile/ylfpgl/medicalWaste/output/edit.do")
-    Observable<HttpResult<String>> outputWasteBucket(@Query("orgId") String orgId, @Query("userId") String userId, @Query("fileIds") String fileIds, @Query("outputTotalWeight") String outputTotalWeight);
+    @GET("/hospital/mobile/ylfpgl/medicalWaste/input/getGarbageBin.do")
+    Observable<HttpResult<InputedBucketEntity>> getBucketDetail(@Query("guid") String guid);
+
+    @Headers({"Content-Type: application/json","Accept: application/json"})
+    @POST("/hospital/mobile/ylfpgl/medicalWaste/output/editBatch.do")
+    Observable<HttpResult<String>> outputWasteBucket(@Body RequestBody requestBody);
 
     @GET("/hospital/mobile/ylfpgl/medicalWaste/output/query.do")
-    Observable<HttpResult<String>> getOutputedList(@Query("orgId") String orgId, @Query("userId") String userId, @Query("key") String key);
+    Observable<HttpResult<ArrayList<InputedBucketEntity>>> getOutputedList(@QueryMap Map<String, String> queryMap);
 
     @GET("/hospital/mobile/ylfpgl/medicalWaste/output/get.do")
     Observable<HttpResult<String>> getOutputDetail(@Query("orgId") String orgId, @Query("userId") String userId, @Query("guid") String guid);
+
+    @Multipart
+    @POST("/hospital/mobile/system/upload.do")
+    Observable<HttpResult<UploadPhotoEntity>> uploadPhoto(@Query("userId") String userId, @Part MultipartBody.Part file);
 
 }

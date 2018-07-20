@@ -4,11 +4,13 @@ import android.support.annotation.Nullable;
 
 import com.hnsi.zheng.medicalwastemanager.beans.CollectedWasteEntity;
 import com.hnsi.zheng.medicalwastemanager.beans.InputedBucketEntity;
+import com.hnsi.zheng.medicalwastemanager.beans.UploadPhotoEntity;
 import com.hnsi.zheng.medicalwastemanager.beans.WasteUploadEntity;
 import com.hnsi.zheng.medicalwastemanager.beans.HttpResult;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -69,7 +72,9 @@ public class Network {
     private static ApiService apiService;
     private static OkHttpClient mOkHttpClient;
     private static Retrofit mRetrofit;
-    private static final String BASEURL= "http://47.96.81.0/";
+    //private static final String BASEURL= "http://47.96.81.0/";
+    private static final String BASEURL= "http://192.168.12.150:8080/";
+
 
     /**
      * 收集医废打印标签后调用次接口
@@ -190,14 +195,55 @@ public class Network {
     }
 
     /**
-     * 获取要出库的医废桶的信息
-     * @param orgId
-     * @param userId
+     * 获取要出库的医废桶的入库净重
      * @param guid
      * @return
      */
-    public Observable<HttpResult<String>> getOutputDetail(String orgId, String userId, String guid){
-        return apiService.getOutputDetail(orgId, userId, guid);
+    public Observable<HttpResult<InputedBucketEntity>> getBucketDetail(String guid){
+        return apiService.getBucketDetail(guid);
+    }
+
+    /**
+     * 上传出库信息
+     * @param jsonObject
+     * @return
+     */
+    public Observable<HttpResult<String>> outputWasteBucket(JSONObject jsonObject){
+        RequestBody body= RequestBody.create(MediaType.parse("application/json"),jsonObject.toString());
+        return apiService.outputWasteBucket(body);
+    }
+
+    /**
+     * 获取已出库的医废桶列表
+     * @param orgId
+     * @param userId
+     * @param key
+     * @return
+     */
+    public Observable<HttpResult<ArrayList<InputedBucketEntity>>> getOutputedList(String orgId,//医院id
+                                                                                  String userId,//收集人id
+                                                                                  @Nullable String key){//关键字
+        Map<String, String> paramsMap= new HashMap<>();
+        paramsMap.put("orgId", orgId);
+        paramsMap.put("userId", userId);
+        if (key!= null && key.trim().length()> 0){
+            paramsMap.put("key", key);
+        }
+        return apiService.getOutputedList(paramsMap);
+    }
+
+    /**
+     * 上传图片
+     * @param userId
+     * @param file
+     * @return
+     */
+    public Observable<HttpResult<UploadPhotoEntity>> uploadPhoto(String userId, File file){
+        //2、创建RequestBody，其中`multipart/form-data`为编码类型
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpg"), file);
+        //3、创建`MultipartBody.Part`，其中需要注意第一个参数`fileUpload`需要与服务器对应,也就是`键`
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+        return apiService.uploadPhoto(userId, part);
     }
 
 }

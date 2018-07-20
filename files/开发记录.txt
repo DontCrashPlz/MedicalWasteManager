@@ -238,14 +238,6 @@ hospital/mobile/system/upload.do?file=?&userId=?
 	fileSize;
 }
 
-
-
-
-
-
-
-
-
 IC卡数据格式：
 
 IC卡编号 userNo
@@ -290,3 +282,5 @@ ID: wangzhizhen2018  密码：mist445566
 程鑫 2018/7/5 星期四 下午 3:26:10
 远程连接密码：124545    系统登录密码：Yf445566
 47.96.81.0
+
+hosptial/auth/linkService.do 检查连接是否正常

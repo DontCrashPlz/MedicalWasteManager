@@ -276,6 +276,72 @@ public class InputMainActivity extends BaseActivity {
             }
         }
     }
+//    private long mLastReceiveTime;
+//    private String mLastQrInfoStr;
+//    class InputReceiver extends BroadcastReceiver{
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            String qrInfoStr= intent.getStringExtra(QR_DATA);
+//
+//            if (qrInfoStr== null){
+//                showShortToast("无效数据");
+//                return;
+//            }
+//
+//            qrInfoStr.replace("\n", "").trim();
+//            if (qrInfoStr.length()< 1){
+//                showShortToast("无效数据");
+//                return;
+//            }
+//
+//            LogUtil.d("红光扫码返回的数据：" , qrInfoStr);
+//
+//            String[] qrInfos= qrInfoStr.split("_");
+//            int qrInfoSize= qrInfos.length;
+//            if (qrInfoSize== 4){//这是医废桶二维码
+//                LogUtil.d("红光扫码医废桶编号：" , qrInfos[3] + "---" + qrInfos[3].length());
+//                if (qrInfos[3].length()!= 19 ){
+//                    mLastQrInfoStr= qrInfoStr;
+//                    LogUtil.d("不完整的医废桶信息：", mLastQrInfoStr);
+//                    return;
+//                }
+//                wasteBucketInfo= qrInfoStr;
+//                wasteBucketInfos= qrInfos;
+//                mBucketNumTv.setText(qrInfos[3]);
+//            }else if (qrInfoSize== 10){//这是医废收集带二维码
+//                if (qrInfos[9].length()!= 19 ){
+//                    showShortToast("无效的二维码");
+//                    return;
+//                }
+//                if (wasteBucketInfos== null || wasteBucketInfos.length< 1){
+//                    showShortToast("请先扫描医废桶二维码");
+//                    return;
+//                }
+//                if (mAdapter!= null){
+//                    String wasteGuid= qrInfos[9];
+//                    if (mInputWasteGuids.contains(wasteGuid)){
+//                        return;
+//                    }
+//                    mInputWasteGuids.add(wasteGuid);
+//                    mAdapter.addData(qrInfos);
+//                }
+//            }else {
+//                if (mUncompletedQrInfoStr!= null && mUncompletedQrInfoStr.length()> 0){
+//                    mUncompletedQrInfoStr= mUncompletedQrInfoStr + qrInfoStr.replace("\n" , "");
+//                    LogUtil.d("拼接之后的医废桶信息：", mUncompletedQrInfoStr);
+//                    String[] strs= mUncompletedQrInfoStr.replace("\n" , "").split("_");
+//                    if (strs.length== 4 && strs[3].length()== 19){//这是医废桶二维码
+//                        wasteBucketInfo= mUncompletedQrInfoStr;
+//                        wasteBucketInfos= strs;
+//                        mBucketNumTv.setText(strs[3]);
+//                    }
+//                    mUncompletedQrInfoStr= "";
+//                }
+//                //showShortToast("无效二维码");
+//            }
+//
+//        }
+//    }
 
     /**
      * 弹出入库成功弹窗
