@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -219,129 +220,137 @@ public class InputMainActivity extends BaseActivity {
         dialog.setLabel("请稍候..");
     }
 
-
-    private String mUncompletedQrInfoStr;
-    class InputReceiver extends BroadcastReceiver{
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String qrInfoStr= intent.getStringExtra(QR_DATA);
-            LogUtil.d("红光扫码返回的数据：" , qrInfoStr);
-            if (qrInfoStr!= null && qrInfoStr.length()> 0){
-                String[] qrInfos= qrInfoStr.replace("\n" , "").split("_");
-                int qrInfoSize= qrInfos.length;
-                if (qrInfoSize== 4){//这是医废桶二维码
-                    LogUtil.d("红光扫码医废桶编号：" , qrInfos[3] + "---" + qrInfos[3].length());
-                    if (qrInfos[3].length()!= 19 ){
-                        //showShortToast("无效的二维码");
-                        mUncompletedQrInfoStr= qrInfoStr.replace("\n" , "");
-                        LogUtil.d("不完整的医废桶信息：", mUncompletedQrInfoStr);
-                        return;
-                    }
-                    wasteBucketInfo= qrInfoStr;
-                    wasteBucketInfos= qrInfos;
-                    mBucketNumTv.setText(qrInfos[3]);
-                }else if (qrInfoSize== 10){//这是医废收集带二维码
-                    if (qrInfos[9].length()!= 19 ){
-                        showShortToast("无效的二维码");
-                        return;
-                    }
-                    if (wasteBucketInfos== null || wasteBucketInfos.length< 1){
-                        showShortToast("请先扫描医废桶二维码");
-                        return;
-                    }
-                    if (mAdapter!= null){
-                        String wasteGuid= qrInfos[9];
-                        if (mInputWasteGuids.contains(wasteGuid)){
-                            return;
-                        }
-                        mInputWasteGuids.add(wasteGuid);
-                        mAdapter.addData(qrInfos);
-                    }
-                }else {
-                    if (mUncompletedQrInfoStr!= null && mUncompletedQrInfoStr.length()> 0){
-                        mUncompletedQrInfoStr= mUncompletedQrInfoStr + qrInfoStr.replace("\n" , "");
-                        LogUtil.d("拼接之后的医废桶信息：", mUncompletedQrInfoStr);
-                        String[] strs= mUncompletedQrInfoStr.replace("\n" , "").split("_");
-                        if (strs.length== 4 && strs[3].length()== 19){//这是医废桶二维码
-                            wasteBucketInfo= mUncompletedQrInfoStr;
-                            wasteBucketInfos= strs;
-                            mBucketNumTv.setText(strs[3]);
-                        }
-                        mUncompletedQrInfoStr= "";
-                    }
-                    //showShortToast("无效二维码");
-                }
-            }else {
-                showShortToast("无效数据");
-            }
-        }
-    }
-//    private long mLastReceiveTime;
-//    private String mLastQrInfoStr;
+//    private String mUncompletedQrInfoStr;
 //    class InputReceiver extends BroadcastReceiver{
 //        @Override
 //        public void onReceive(Context context, Intent intent) {
 //            String qrInfoStr= intent.getStringExtra(QR_DATA);
-//
-//            if (qrInfoStr== null){
-//                showShortToast("无效数据");
-//                return;
-//            }
-//
-//            qrInfoStr.replace("\n", "").trim();
-//            if (qrInfoStr.length()< 1){
-//                showShortToast("无效数据");
-//                return;
-//            }
-//
 //            LogUtil.d("红光扫码返回的数据：" , qrInfoStr);
-//
-//            String[] qrInfos= qrInfoStr.split("_");
-//            int qrInfoSize= qrInfos.length;
-//            if (qrInfoSize== 4){//这是医废桶二维码
-//                LogUtil.d("红光扫码医废桶编号：" , qrInfos[3] + "---" + qrInfos[3].length());
-//                if (qrInfos[3].length()!= 19 ){
-//                    mLastQrInfoStr= qrInfoStr;
-//                    LogUtil.d("不完整的医废桶信息：", mLastQrInfoStr);
-//                    return;
-//                }
-//                wasteBucketInfo= qrInfoStr;
-//                wasteBucketInfos= qrInfos;
-//                mBucketNumTv.setText(qrInfos[3]);
-//            }else if (qrInfoSize== 10){//这是医废收集带二维码
-//                if (qrInfos[9].length()!= 19 ){
-//                    showShortToast("无效的二维码");
-//                    return;
-//                }
-//                if (wasteBucketInfos== null || wasteBucketInfos.length< 1){
-//                    showShortToast("请先扫描医废桶二维码");
-//                    return;
-//                }
-//                if (mAdapter!= null){
-//                    String wasteGuid= qrInfos[9];
-//                    if (mInputWasteGuids.contains(wasteGuid)){
+//            if (qrInfoStr!= null && qrInfoStr.length()> 0){
+//                String[] qrInfos= qrInfoStr.replace("\n" , "").split("_");
+//                int qrInfoSize= qrInfos.length;
+//                if (qrInfoSize== 4){//这是医废桶二维码
+//                    LogUtil.d("红光扫码医废桶编号：" , qrInfos[3] + "---" + qrInfos[3].length());
+//                    if (qrInfos[3].length()!= 19 ){
+//                        //showShortToast("无效的二维码");
+//                        mUncompletedQrInfoStr= qrInfoStr.replace("\n" , "");
+//                        LogUtil.d("不完整的医废桶信息：", mUncompletedQrInfoStr);
 //                        return;
 //                    }
-//                    mInputWasteGuids.add(wasteGuid);
-//                    mAdapter.addData(qrInfos);
+//                    wasteBucketInfo= qrInfoStr;
+//                    wasteBucketInfos= qrInfos;
+//                    mBucketNumTv.setText(qrInfos[3]);
+//                }else if (qrInfoSize== 10){//这是医废收集带二维码
+//                    if (qrInfos[9].length()!= 19 ){
+//                        showShortToast("无效的二维码");
+//                        return;
+//                    }
+//                    if (wasteBucketInfos== null || wasteBucketInfos.length< 1){
+//                        showShortToast("请先扫描医废桶二维码");
+//                        return;
+//                    }
+//                    if (mAdapter!= null){
+//                        String wasteGuid= qrInfos[9];
+//                        if (mInputWasteGuids.contains(wasteGuid)){
+//                            return;
+//                        }
+//                        mInputWasteGuids.add(wasteGuid);
+//                        mAdapter.addData(qrInfos);
+//                    }
+//                }else {
+//                    if (mUncompletedQrInfoStr!= null && mUncompletedQrInfoStr.length()> 0){
+//                        mUncompletedQrInfoStr= mUncompletedQrInfoStr + qrInfoStr.replace("\n" , "");
+//                        LogUtil.d("拼接之后的医废桶信息：", mUncompletedQrInfoStr);
+//                        String[] strs= mUncompletedQrInfoStr.replace("\n" , "").split("_");
+//                        if (strs.length== 4 && strs[3].length()== 19){//这是医废桶二维码
+//                            wasteBucketInfo= mUncompletedQrInfoStr;
+//                            wasteBucketInfos= strs;
+//                            mBucketNumTv.setText(strs[3]);
+//                        }
+//                        mUncompletedQrInfoStr= "";
+//                    }
+//                    //showShortToast("无效二维码");
 //                }
 //            }else {
-//                if (mUncompletedQrInfoStr!= null && mUncompletedQrInfoStr.length()> 0){
-//                    mUncompletedQrInfoStr= mUncompletedQrInfoStr + qrInfoStr.replace("\n" , "");
-//                    LogUtil.d("拼接之后的医废桶信息：", mUncompletedQrInfoStr);
-//                    String[] strs= mUncompletedQrInfoStr.replace("\n" , "").split("_");
-//                    if (strs.length== 4 && strs[3].length()== 19){//这是医废桶二维码
-//                        wasteBucketInfo= mUncompletedQrInfoStr;
-//                        wasteBucketInfos= strs;
-//                        mBucketNumTv.setText(strs[3]);
-//                    }
-//                    mUncompletedQrInfoStr= "";
-//                }
-//                //showShortToast("无效二维码");
+//                showShortToast("无效数据");
 //            }
-//
 //        }
 //    }
+
+    private long mLastReceiveTime;//上次接收时间
+    private String mLastQrInfoStr;//上次接收内容
+    class InputReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String qrInfoStr= intent.getStringExtra(QR_DATA);
+            if (qrInfoStr== null){
+                showShortToast("无效数据");
+                return;
+            }
+            qrInfoStr= qrInfoStr.replace("\n", "").trim();
+            if (qrInfoStr.length()< 1){
+                showShortToast("无效数据");
+                return;
+            }
+            LogUtil.d("红光扫码返回的数据：" , qrInfoStr);
+
+            long currentTime= System.currentTimeMillis();
+            LogUtil.d("广播接收器接收时间：", "" + currentTime);
+            if ((currentTime - mLastReceiveTime) < 300 && mLastQrInfoStr!= null){
+                qrInfoStr= mLastQrInfoStr + qrInfoStr;
+            }
+            mLastReceiveTime= currentTime;
+            mLastQrInfoStr= qrInfoStr;
+
+            String[] qrInfos= qrInfoStr.split("_");
+            if (isBucketQrCode(qrInfos)){
+                wasteBucketInfo= qrInfoStr;
+                wasteBucketInfos= qrInfos;
+                mBucketNumTv.setText(qrInfos[3]);
+            }else if (isWasteQrCode(qrInfos)){
+                if (wasteBucketInfos== null || wasteBucketInfos.length< 1){
+                    showShortToast("请先扫描医废桶二维码");
+                    return;
+                }
+                if (mAdapter!= null){
+                    String wasteGuid= qrInfos[9];
+                    if (mInputWasteGuids.contains(wasteGuid)){
+                        return;
+                    }
+                    mInputWasteGuids.add(wasteGuid);
+                    mAdapter.addData(qrInfos);
+                }
+            }
+        }
+    }
+
+    /**
+     * 判断是否扫描的医废桶二维码
+     * @param strs
+     * @return
+     */
+    private boolean isBucketQrCode(String[] strs){
+        if (strs== null) return false;
+        int size= strs.length;
+        if (size== 4 && strs[3].length()== 19){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 判断是否扫描的医废袋二维码
+     * @param strs
+     * @return
+     */
+    private boolean isWasteQrCode(String[] strs){
+        if (strs== null) return false;
+        int size= strs.length;
+        if (size== 10 && strs[9].length()== 19){
+            return true;
+        }
+        return false;
+    }
 
     /**
      * 弹出入库成功弹窗
