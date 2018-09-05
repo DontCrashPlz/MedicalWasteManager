@@ -2,6 +2,8 @@ package com.hnsi.zheng.medicalwastemanager.apps;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -32,10 +34,25 @@ public class ServerSettingActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_setting);
         ButterKnife.bind(this);
+
+        Toolbar toolbar= findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar()!= null){
+            getSupportActionBar().setTitle("服务器设置");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
     }
 
     @Override
     public void initProgressDialog() {
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId()== android.R.id.home)
+            finish();
+        return true;
     }
 }

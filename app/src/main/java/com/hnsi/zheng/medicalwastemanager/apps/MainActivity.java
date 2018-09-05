@@ -84,7 +84,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //            finish();
         if (item.getItemId()== R.id.setting){
             //showShortToast("设置");
-            startActivity(new Intent(getRealContext(), NfcTestActivity.class));
+            startActivity(new Intent(getRealContext(), SettingActivity.class));
         }
         return true;
     }

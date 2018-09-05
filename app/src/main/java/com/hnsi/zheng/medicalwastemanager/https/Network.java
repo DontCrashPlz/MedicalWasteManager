@@ -73,8 +73,8 @@ public class Network {
     private static OkHttpClient mOkHttpClient;
     private static Retrofit mRetrofit;
     //private static final String BASEURL= "http://47.96.81.0/";
-    private static final String BASEURL= "http://192.168.12.150:8080/";
-
+    //private static final String BASEURL= "http://192.168.12.150:8080/";
+    private static final String BASEURL= "http://dns.37371.cn:8016/";
 
     /**
      * 收集医废打印标签后调用次接口
