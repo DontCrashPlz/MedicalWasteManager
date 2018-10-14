@@ -27,9 +27,14 @@ import android.widget.Toast;
 
 import com.google.zxing.common.StringUtils;
 import com.hnsi.zheng.medicalwastemanager.R;
+import com.hnsi.zheng.medicalwastemanager.apps.AppConstants;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseActivity;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseNfcActivity;
+import com.hnsi.zheng.medicalwastemanager.apps.MainActivity;
+import com.hnsi.zheng.medicalwastemanager.beans.format.CardDataEntity;
+import com.hnsi.zheng.medicalwastemanager.exception.InvalidCardDataException;
 import com.hnsi.zheng.medicalwastemanager.utils.LogUtil;
+import com.hnsi.zheng.medicalwastemanager.utils.SharedPrefUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -46,7 +51,8 @@ import butterknife.OnClick;
 public class CollectInfoActivity extends BaseNfcActivity implements CompoundButton.OnCheckedChangeListener {
 
     //蓝牙电子秤串口号
-    static final String BT04_A= "AB:7D:37:57:34:02";
+    //static final String BT04_A= "AB:7D:37:57:34:02";
+    private String mDevicePort;
     // Debugging
     private static final String TAG = "BluetoothChat";
     private static final boolean D = true;
@@ -73,7 +79,6 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
     // Member object for the chat services
     private BluetoothSerialService mChatService = null;
     private BluetoothDevice device = null;
-
 
     //二维码打印页面的请求码和返回码
     static final int QRCODE_REQUESTCODE= 0;
@@ -109,9 +114,9 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
     //当前重量暂存字段
     private String currentWeigh;
     //收集人员信息
-    private String collectPersonInfo;
-    //收集人员信息数组
-    private String[] collectInfos;
+    private CardDataEntity collectPerson;
+    //科室人员信息
+    private CardDataEntity departmentPerson;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,17 +131,15 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        collectPersonInfo= getIntent().getStringExtra("collect_person_info");
-        if (collectPersonInfo== null || collectPersonInfo.length()< 1){
-            showShortToast("收集人员信息无效");
+        mDevicePort= (String) SharedPrefUtils.get(getRealContext(), AppConstants.SharedPref_Bluetooth_Collect, "");
+        if (mDevicePort== null || mDevicePort.length()== 0){
+            showLongToast("请在设置页面设置蓝牙秤");
+            finish();
             return;
         }
-        collectInfos= collectPersonInfo.split("_");
-        if (collectInfos== null || collectInfos.length!=  8){
-            showShortToast("收集人员信息格式错误");
-            return;
-        }
-        mCollectPersonTv.setText(collectInfos[2]);
+
+        collectPerson = (CardDataEntity) getIntent().getSerializableExtra(MainActivity.COLLECT_PERSON);
+        mCollectPersonTv.setText(collectPerson.getUserName());
 
         checkBox1.setOnCheckedChangeListener(this);
         checkBox2.setOnCheckedChangeListener(this);
@@ -179,8 +182,8 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
                     return;
                 }
                 Intent intent= new Intent(getRealContext(), PrintQRCodeActivity.class);
-                intent.putExtra("collect_person_info", collectPersonInfo);
-                intent.putExtra("department_person_info", mCardText);
+                intent.putExtra(MainActivity.COLLECT_PERSON, collectPerson);
+                intent.putExtra(MainActivity.DEPARTMENT_PERSON, departmentPerson);
                 intent.putExtra("waste_weigh", waste_weigh);
                 intent.putExtra("waste_type", waste_type);
                 startActivityForResult(intent, QRCODE_REQUESTCODE);
@@ -190,7 +193,8 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // Get the BLuetoothDevice object
-        device = mBluetoothAdapter.getRemoteDevice(BT04_A);
+        //device = mBluetoothAdapter.getRemoteDevice(BT04_A);
+        device = mBluetoothAdapter.getRemoteDevice(mDevicePort);
         // Initialize the BluetoothChatService to perform bluetooth connections
         mChatService = new BluetoothSerialService(this, mHandler);
         // Attempt to connect to the device
@@ -288,7 +292,7 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
             finish();
         if (item.getItemId()== R.id.edit){
             Intent intent= new Intent(getRealContext(), CollectedListActivity.class);
-            intent.putExtra("collect_person_info", collectPersonInfo);
+            intent.putExtra(MainActivity.COLLECT_PERSON, collectPerson);
             startActivity(intent);
         }
         return true;
@@ -334,11 +338,16 @@ public class CollectInfoActivity extends BaseNfcActivity implements CompoundButt
     @Override
     protected void onNewIntent(Intent intent) {
         readNfcTag(intent);
-        if (mCardText== null || mCardText.length()< 1) return;
-        showShortToast("扫描成功：" + mCardText);
-        String[] cardInfos= mCardText.split("_");
-        mDepartmentTv.setText(cardInfos[6]);
-        mDepartmentPersonTv.setText(cardInfos[2]);
+        try {
+            departmentPerson = new CardDataEntity(mCardText);
+            showShortToast("扫描成功：" + departmentPerson.toFormatStr());
+        } catch (InvalidCardDataException e) {
+            e.printStackTrace();
+            showShortToast(e.getMessage());
+            return;
+        }
+        mDepartmentTv.setText(departmentPerson.getDepartmentName());
+        mDepartmentPersonTv.setText(departmentPerson.getUserName());
     }
 
     private void readNfcTag(Intent intent){

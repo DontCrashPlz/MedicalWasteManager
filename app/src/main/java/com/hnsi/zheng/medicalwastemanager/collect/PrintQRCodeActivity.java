@@ -25,11 +25,15 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.hnsi.zheng.medicalwastemanager.R;
+import com.hnsi.zheng.medicalwastemanager.apps.AppConstants;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseActivity;
+import com.hnsi.zheng.medicalwastemanager.apps.MainActivity;
 import com.hnsi.zheng.medicalwastemanager.beans.WasteUploadEntity;
+import com.hnsi.zheng.medicalwastemanager.beans.format.CardDataEntity;
 import com.hnsi.zheng.medicalwastemanager.https.Network;
 import com.hnsi.zheng.medicalwastemanager.https.ResponseTransformer;
 import com.hnsi.zheng.medicalwastemanager.utils.LogUtil;
+import com.hnsi.zheng.medicalwastemanager.utils.SharedPrefUtils;
 import com.hnsi.zheng.medicalwastemanager.utils.Tools;
 import com.hnsi.zheng.medicalwastemanager.widgets.progressDialog.ProgressDialog;
 import com.qs.helper.printer.PrintService;
@@ -71,10 +75,8 @@ public class PrintQRCodeActivity extends BaseActivity {
     @BindView(R.id.button_print)
     Button mPrintBtn;
 
-    private String collect_person_info;
-    private String[] collectInfos;
-    private String department_person_info;
-    private String[] departmentInfos;
+    private CardDataEntity mCollectPerson;
+    private CardDataEntity mDepartmentPerson;
     private String waste_weigh;
     private String waste_type;
     private String currentTime;
@@ -90,6 +92,8 @@ public class PrintQRCodeActivity extends BaseActivity {
     Handler btStatushandler = null;//蓝牙打印机状态监听
     Handler handler = null;
 
+    private String mPrintPort;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,16 +107,21 @@ public class PrintQRCodeActivity extends BaseActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        collect_person_info= getIntent().getStringExtra("collect_person_info");
-        collectInfos= collect_person_info.split("_");
-        department_person_info= getIntent().getStringExtra("department_person_info");
-        departmentInfos= department_person_info.split("_");
+        mPrintPort= (String) SharedPrefUtils.get(getRealContext(), AppConstants.SharedPref_Print, "");
+        if (mPrintPort== null || mPrintPort.length()== 0){
+            showLongToast("请在设置页面设置蓝牙打印机");
+            finish();
+            return;
+        }
+
+        mCollectPerson= (CardDataEntity) getIntent().getSerializableExtra(MainActivity.COLLECT_PERSON);
+        mDepartmentPerson= (CardDataEntity) getIntent().getSerializableExtra(MainActivity.DEPARTMENT_PERSON);
         waste_weigh= getIntent().getStringExtra("waste_weigh");
         waste_type= getIntent().getStringExtra("waste_type");
 
-        mCollectPersonTv.setText(collectInfos[2]);
-        mDepartmentTv.setText(departmentInfos[6]);
-        mDepartmentPersonTv.setText(departmentInfos[2]);
+        mCollectPersonTv.setText(mCollectPerson.getUserName());
+        mDepartmentTv.setText(mDepartmentPerson.getDepartmentName());
+        mDepartmentPersonTv.setText(mDepartmentPerson.getUserName());
         mWasteWeighTv.setText(waste_weigh);
         mWasteTypeTv.setText(waste_type);
         currentTime= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -137,16 +146,16 @@ public class PrintQRCodeActivity extends BaseActivity {
                     return;
                 }
 
-                String orgName= departmentInfos[4];//0 医院名称
-                String createBy= collectInfos[1];//1 收集人员ID
-                String createName= collectInfos[2];//2 收集人员姓名
-                String departmentName= departmentInfos[6];//3 科室名称
-                String departmentUserId= departmentInfos[1];//4 科室人员ID
-                String departmentUserName= departmentInfos[2];//5 科室人员姓名
+                String orgName= mDepartmentPerson.getOrgName();//0 医院名称
+                String createBy= mCollectPerson.getUserId();//1 收集人员ID
+                String createName= mCollectPerson.getUserName();//2 收集人员姓名
+                String departmentName= mDepartmentPerson.getDepartmentName();//3 科室名称
+                String departmentUserId= mDepartmentPerson.getUserId();//4 科室人员ID
+                String departmentUserName= mDepartmentPerson.getUserName();//5 科室人员姓名
                 String wasteTypeDictId= "" + Tools.getWasteTypeIdByName(waste_type);//6 医废类型
                 String weight= "" + Tools.formatWasteWeigh(waste_weigh);//7 医废重量
                 String createTime= currentTime;//8 收集时间
-                String guid= departmentInfos[3] + departmentInfos[5] + currentTime4Num + wasteTypeDictId;//9 医废编号
+                String guid= mDepartmentPerson.getOrgId() + mDepartmentPerson.getDepartmentId() + currentTime4Num + wasteTypeDictId;//9 医废编号
                 String str=
                         orgName
                         + "_" + createBy
@@ -163,7 +172,7 @@ public class PrintQRCodeActivity extends BaseActivity {
                 PrintService.pl.printImage(createQRImage(str,300,300));
                 PrintService.pl.write(new byte[] { 0x1d, 0x0c });
 
-                addNetWork(Network.getInstance().collectMedicalWaste(departmentUserId, weight, wasteTypeDictId, createBy, collectInfos[3], guid)
+                addNetWork(Network.getInstance().collectMedicalWaste(departmentUserId, weight, wasteTypeDictId, createBy, mCollectPerson.getOrgId(), guid)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .compose(ResponseTransformer.<WasteUploadEntity>handleResult())
@@ -212,7 +221,8 @@ public class PrintQRCodeActivity extends BaseActivity {
         StrictMode.setThreadPolicy(policy);
 
         showDialog();
-        PrintService.pl.connect("57:4C:54:14:3A:68");
+        //PrintService.pl.connect("57:4C:54:14:3A:68");
+        PrintService.pl.connect(mPrintPort);
 
     }
 
@@ -231,7 +241,9 @@ public class PrintQRCodeActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        PrintService.pl.disconnect();
+        if (PrintService.pl != null){
+            PrintService.pl.disconnect();
+        }
         super.onDestroy();
     }
 
@@ -488,7 +500,8 @@ public class PrintQRCodeActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 showDialog();
-                PrintService.pl.connect("57:4C:54:14:3A:68");
+                //PrintService.pl.connect("57:4C:54:14:3A:68");
+                PrintService.pl.connect(mPrintPort);
                 dialog.dismiss();
             }
         });

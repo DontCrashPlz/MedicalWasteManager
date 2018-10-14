@@ -18,6 +18,11 @@ import com.hnsi.zheng.medicalwastemanager.output.OutputNfcReadActivity;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
+    //收集人员信息实体
+    public static final String COLLECT_PERSON = "collect_person";
+    //科室人员信息实体
+    public static final String DEPARTMENT_PERSON = "department_person";
+
     private TextView mButton1;
     private TextView mButton2;
     private TextView mButton3;
@@ -84,7 +89,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //            finish();
         if (item.getItemId()== R.id.setting){
             //showShortToast("设置");
-            startActivity(new Intent(getRealContext(), SettingActivity.class));
+            startActivity(new Intent(getRealContext(), SettingActivity2.class));
         }
         return true;
     }

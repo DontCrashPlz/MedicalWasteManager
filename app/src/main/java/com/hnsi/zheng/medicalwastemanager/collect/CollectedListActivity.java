@@ -20,7 +20,9 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.hnsi.zheng.medicalwastemanager.R;
 import com.hnsi.zheng.medicalwastemanager.adapters.CollectedRecyclerAdapter;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseActivity;
+import com.hnsi.zheng.medicalwastemanager.apps.MainActivity;
 import com.hnsi.zheng.medicalwastemanager.beans.CollectedWasteEntity;
+import com.hnsi.zheng.medicalwastemanager.beans.format.CardDataEntity;
 import com.hnsi.zheng.medicalwastemanager.https.Network;
 import com.hnsi.zheng.medicalwastemanager.https.ResponseTransformer;
 import com.hnsi.zheng.medicalwastemanager.widgets.CollectedWasteItemDecoration;
@@ -50,7 +52,7 @@ public class CollectedListActivity extends BaseActivity {
     RecyclerView mCollectedRecycler;
 
     private CollectedRecyclerAdapter mAdapter;
-    private String[] mCollectInfos;
+    private CardDataEntity mCollectPerson;
     private String mOrgId;
     private String mUserId;
 
@@ -69,9 +71,9 @@ public class CollectedListActivity extends BaseActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mCollectInfos= getIntent().getStringExtra("collect_person_info").split("_");
-        mOrgId= mCollectInfos[3];
-        mUserId= mCollectInfos[1];
+        mCollectPerson= (CardDataEntity) getIntent().getSerializableExtra(MainActivity.COLLECT_PERSON);
+        mOrgId= mCollectPerson.getOrgId();
+        mUserId= mCollectPerson.getUserId();
 
         mCollectedRecycler.setLayoutManager(new LinearLayoutManager(getRealContext()));
         mAdapter= new CollectedRecyclerAdapter(R.layout.item_collected_waste_recycler);

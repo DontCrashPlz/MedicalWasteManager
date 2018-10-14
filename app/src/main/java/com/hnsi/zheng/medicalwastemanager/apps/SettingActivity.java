@@ -1,7 +1,7 @@
 package com.hnsi.zheng.medicalwastemanager.apps;
 
 import android.app.Dialog;
-import android.bluetooth.BluetoothAdapter;
+
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,15 +23,12 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.hnsi.zheng.medicalwastemanager.R;
 import com.hnsi.zheng.medicalwastemanager.adapters.BluetoothDeviceRecyclerAdapter;
-import com.hnsi.zheng.medicalwastemanager.beans.OutputBucketEntity;
+
 import com.hnsi.zheng.medicalwastemanager.utils.BluetoothUtils;
 import com.hnsi.zheng.medicalwastemanager.utils.LogUtil;
 import com.hnsi.zheng.medicalwastemanager.utils.SharedPrefUtils;
 import com.hnsi.zheng.medicalwastemanager.widgets.CollectedWasteItemDecoration;
-import com.qs.helper.printer.Device;
-import com.qs.helper.printer.PrintService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;

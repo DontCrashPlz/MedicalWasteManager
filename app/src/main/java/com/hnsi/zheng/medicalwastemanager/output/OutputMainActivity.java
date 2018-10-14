@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.hnsi.zheng.medicalwastemanager.R;
 import com.hnsi.zheng.medicalwastemanager.adapters.OutputWasteRecyclerAdapter;
+import com.hnsi.zheng.medicalwastemanager.apps.AppConstants;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseActivity;
 import com.hnsi.zheng.medicalwastemanager.beans.InputedBucketEntity;
 import com.hnsi.zheng.medicalwastemanager.beans.OutputBucketEntity;
@@ -42,6 +43,7 @@ import com.hnsi.zheng.medicalwastemanager.https.Network;
 import com.hnsi.zheng.medicalwastemanager.https.ResponseTransformer;
 import com.hnsi.zheng.medicalwastemanager.input.InputedListActivity;
 import com.hnsi.zheng.medicalwastemanager.utils.LogUtil;
+import com.hnsi.zheng.medicalwastemanager.utils.SharedPrefUtils;
 import com.hnsi.zheng.medicalwastemanager.widgets.progressDialog.ProgressDialog;
 
 import org.json.JSONArray;
@@ -79,7 +81,8 @@ public class OutputMainActivity extends BaseActivity {
     private static final String QR_DATA= "qr_data";
 
     //蓝牙电子秤串口号
-    static final String BT04_A= "AB:7D:37:57:34:02";
+    //static final String BT04_A= "AB:7D:37:57:34:02";
+    private String mDevicePort;
     // Debugging
     private static final String TAG = "BluetoothChat";
     private static final boolean D = true;
@@ -153,6 +156,14 @@ public class OutputMainActivity extends BaseActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        mDevicePort= (String) SharedPrefUtils.get(getRealContext(), AppConstants.SharedPref_Bluetooth_Output, "");
+        LogUtil.d("蓝牙秤串口号", mDevicePort);
+        if (mDevicePort== null || mDevicePort.length()!= 17){
+            showLongToast("请在设置页面设置蓝牙秤");
+            finish();
+            return;
+        }
+
         outputPersonInfo= getIntent().getStringExtra("output_person_info");
         if (outputPersonInfo== null || outputPersonInfo.length()< 1){
             showShortToast("操作人员信息无效");
@@ -176,7 +187,8 @@ public class OutputMainActivity extends BaseActivity {
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // Get the BLuetoothDevice object
-        device = mBluetoothAdapter.getRemoteDevice(BT04_A);
+        //device = mBluetoothAdapter.getRemoteDevice(BT04_A);
+        device = mBluetoothAdapter.getRemoteDevice(mDevicePort);
         // Initialize the BluetoothChatService to perform bluetooth connections
         mChatService = new BluetoothSerialService(this, mHandler);
         // Attempt to connect to the device
@@ -392,39 +404,65 @@ public class OutputMainActivity extends BaseActivity {
         }
     }
 
-    private String mUncompletedQrInfoStr;
+    private long mLastReceiveTime;//上次接收时间
+    private String mLastQrInfoStr;//上次接收内容
     class OutputReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
             String qrInfoStr= intent.getStringExtra(QR_DATA);
-            LogUtil.d("红光扫码返回的数据：" , qrInfoStr);
-            if (qrInfoStr!= null && qrInfoStr.length()> 0){
-                String[] qrInfos= qrInfoStr.replace("\n" , "").split("_");
-                int qrInfoSize= qrInfos.length;
-                if (qrInfoSize== 4){//这是医废桶二维码
-                    LogUtil.d("红光扫码医废桶编号：" , qrInfos[3] + "---" + qrInfos[3].length());
-                    if (qrInfos[3].length()!= 19 ){
-                        //showShortToast("无效的二维码");
-                        mUncompletedQrInfoStr= qrInfoStr.replace("\n" , "");
-                        LogUtil.d("不完整的医废桶信息：", mUncompletedQrInfoStr);
-                        return;
-                    }
-                    getInputWeigh(qrInfos[3]);
-                }else {
-                    if (mUncompletedQrInfoStr!= null && mUncompletedQrInfoStr.length()> 0){
-                        mUncompletedQrInfoStr= mUncompletedQrInfoStr + qrInfoStr.replace("\n" , "");
-                        LogUtil.d("拼接之后的医废桶信息：", mUncompletedQrInfoStr);
-                        String[] strs= mUncompletedQrInfoStr.replace("\n" , "").split("_");
-                        if (strs.length== 4 && strs[3].length()== 19){//这是医废桶二维码
-                            getInputWeigh(strs[3]);
-                        }
-                        mUncompletedQrInfoStr= "";
-                    }
-                }
-            }else {
+            if (qrInfoStr== null){
                 showShortToast("无效数据");
+                return;
+            }
+            qrInfoStr= qrInfoStr.replace("\n", "").trim();
+            if (qrInfoStr.length()< 1){
+                showShortToast("无效数据");
+                return;
+            }
+            LogUtil.d("红光扫码返回的数据：" , qrInfoStr);
+
+            long currentTime= System.currentTimeMillis();
+            LogUtil.d("广播接收器接收时间：", "" + currentTime);
+            if ((currentTime - mLastReceiveTime) < 300 && mLastQrInfoStr!= null){
+                qrInfoStr= mLastQrInfoStr + qrInfoStr;
+            }
+            mLastReceiveTime= currentTime;
+            mLastQrInfoStr= qrInfoStr;
+
+            String[] qrInfos= qrInfoStr.split("_");
+            if (isBucketQrCode(qrInfos)){
+                showShortToast(qrInfos[3]);
+                getInputWeigh(qrInfos[3]);
             }
         }
+    }
+
+    /**
+     * 判断是否扫描的医废桶二维码
+     * @param strs
+     * @return
+     */
+    private boolean isBucketQrCode(String[] strs){
+        if (strs== null) return false;
+        int size= strs.length;
+        if (size== 4 && strs[3].length()== 19){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 判断是否扫描的医废袋二维码
+     * @param strs
+     * @return
+     */
+    private boolean isWasteQrCode(String[] strs){
+        if (strs== null) return false;
+        int size= strs.length;
+        if (size== 10 && strs[9].length()== 19){
+            return true;
+        }
+        return false;
     }
 
     private Dialog outputComfirmDialog;

@@ -25,9 +25,11 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.hnsi.zheng.medicalwastemanager.R;
+import com.hnsi.zheng.medicalwastemanager.apps.AppConstants;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseActivity;
 import com.hnsi.zheng.medicalwastemanager.collect.CollectInfoActivity;
 import com.hnsi.zheng.medicalwastemanager.utils.LogUtil;
+import com.hnsi.zheng.medicalwastemanager.utils.SharedPrefUtils;
 import com.hnsi.zheng.medicalwastemanager.widgets.progressDialog.ProgressDialog;
 import com.qs.helper.printer.PrintService;
 import com.qs.helper.printer.PrinterClass;
@@ -67,6 +69,8 @@ public class PrintBucketQRCodeActivity extends BaseActivity {
     Handler btStatushandler = null;//蓝牙打印机状态监听
     Handler handler = null;
 
+    private String mPrintPort;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +82,13 @@ public class PrintBucketQRCodeActivity extends BaseActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("打印医废桶二维码");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        mPrintPort= (String) SharedPrefUtils.get(getRealContext(), AppConstants.SharedPref_Print, "");
+        if (mPrintPort== null || mPrintPort.length()== 0){
+            showLongToast("请在设置页面设置蓝牙打印机");
+            finish();
+            return;
         }
 
         operatePresonInfo= getIntent().getStringExtra("operate_person_info");
@@ -119,7 +130,8 @@ public class PrintBucketQRCodeActivity extends BaseActivity {
         StrictMode.setThreadPolicy(policy);
 
         showDialog();
-        PrintService.pl.connect("57:4C:54:14:3A:68");
+        //PrintService.pl.connect("57:4C:54:14:3A:68");
+        PrintService.pl.connect(mPrintPort);
 
     }
 
@@ -138,7 +150,9 @@ public class PrintBucketQRCodeActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        PrintService.pl.disconnect();
+        if (PrintService.pl != null){
+            PrintService.pl.disconnect();
+        }
         super.onDestroy();
     }
 
@@ -393,7 +407,8 @@ public class PrintBucketQRCodeActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 showDialog();
-                PrintService.pl.connect("57:4C:54:14:3A:68");
+                //PrintService.pl.connect("57:4C:54:14:3A:68");
+                PrintService.pl.connect(mPrintPort);
                 dialog.dismiss();
             }
         });

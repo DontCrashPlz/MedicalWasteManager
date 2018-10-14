@@ -15,6 +15,9 @@ import android.view.MenuItem;
 import com.hnsi.zheng.medicalwastemanager.R;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseActivity;
 import com.hnsi.zheng.medicalwastemanager.apps.BaseNfcActivity;
+import com.hnsi.zheng.medicalwastemanager.apps.MainActivity;
+import com.hnsi.zheng.medicalwastemanager.beans.format.CardDataEntity;
+import com.hnsi.zheng.medicalwastemanager.exception.InvalidCardDataException;
 import com.hnsi.zheng.medicalwastemanager.utils.LogUtil;
 
 import java.util.Arrays;
@@ -57,10 +60,18 @@ public class CollectNfcReadActivity extends BaseNfcActivity {
 //        Tag detectedTag= intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 //        Ndef ndef= Ndef.get(detectedTag);
         readNfcTag(intent);
-        if (mCardText== null || mCardText.length()< 1) return;
-        showShortToast("扫描成功：" + mCardText);
+        //if (mCardText== null || mCardText.length()< 1) return;
+        CardDataEntity entity;
+        try {
+            entity = new CardDataEntity(mCardText);
+            showShortToast("扫描成功：" + entity.toFormatStr());
+        } catch (InvalidCardDataException e) {
+            e.printStackTrace();
+            showShortToast(e.getMessage());
+            return;
+        }
         Intent infoIntent= new Intent(getRealContext(), CollectInfoActivity.class);
-        infoIntent.putExtra("collect_person_info", mCardText);
+        infoIntent.putExtra(MainActivity.COLLECT_PERSON, entity);
         startActivity(infoIntent);
         finish();
     }
