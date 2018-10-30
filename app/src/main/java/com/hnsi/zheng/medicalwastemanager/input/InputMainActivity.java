@@ -197,6 +197,15 @@ public class InputMainActivity extends BaseActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (mInputWasteGuids!= null && mInputWasteGuids.size()> 0){
+            showShortToast("当前工作进度尚未提交");
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId()== android.R.id.home)
             finish();

@@ -255,6 +255,15 @@ public class OutputMainActivity extends BaseActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (mAdapter!= null && mAdapter.getData()!= null && mAdapter.getData().size()> 0){
+            showShortToast("当前工作进度尚未提交");
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    @Override
     public synchronized void onResume() {
         super.onResume();
         LogUtil.d(TAG, "+ ON RESUME +");
